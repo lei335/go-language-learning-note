@@ -1,4 +1,4 @@
-package fileSize
+package file
 
 import "testing"
 
