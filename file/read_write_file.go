@@ -10,7 +10,7 @@ import (
 )
 
 // 1.1、将文件整个读入内存（效率比较高，占用内存也最高）
-func read0(path string) (string, error) {
+func Read0(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return "", err
@@ -24,7 +24,7 @@ func read0(path string) (string, error) {
 }
 
 // 1.2、将文件整个读入内存（效率比较高，占用内存也最高）
-func read1(path string) (string, error) {
+func Read1(path string) (string, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", err
@@ -34,7 +34,7 @@ func read1(path string) (string, error) {
 }
 
 // 2、按字节读取文件
-func read2(path string) (string, error) {
+func Read2(path string) (string, error) {
 	fi, err := os.Open(path)
 	if err != nil {
 		return "", err
@@ -61,8 +61,8 @@ func read2(path string) (string, error) {
 	return string(chunks), nil
 }
 
-// 3、按行读取文件
-func read3(path string) (string, error) {
+// 3、按行读取文件，速度最快
+func Read3(path string) (string, error) {
 	fi, err := os.OpenFile(path, os.O_RDWR, 0666)
 	if err != nil {
 		return "", err
@@ -98,7 +98,7 @@ func read3(path string) (string, error) {
 }
 
 // 如果文件不存在，则创建文件；如果存在，就会覆盖写
-func write0() error {
+func Write0() error {
 	content := []byte("test1\ntest2\n")
 	err := ioutil.WriteFile("test.txt", content, 0644)
 	if err != nil {
@@ -108,7 +108,7 @@ func write0() error {
 }
 
 // 追加写，也可以指定成覆盖写
-func write1() error {
+func Write1() error {
 	content := "test1\ntest2\n"
 	filename := "./test.txt"
 
@@ -139,7 +139,7 @@ func write1() error {
 }
 
 // 追加写
-func write2() error {
+func Write2() error {
 	content := "test1\ntest2\n"
 	filename := "./test.txt"
 
@@ -177,7 +177,7 @@ func write2() error {
 }
 
 // 追加写
-func write3() error {
+func Write3() error {
 	content := "test1\ntest2\n"
 	filename := "./test.txt"
 

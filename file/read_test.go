@@ -1,28 +1,17 @@
 package file
 
 import (
-	"fmt"
-	"time"
+	"testing"
 )
 
-func test() {
-	file := "~/learn/go-mefs-v2/mefs-user"
+func TestRead0(t *testing.T) {
+	if _, err := Read0("/home/zl/learn/go-mefs-v2/mefs-user"); err != nil {
+		t.Error("read0(\"/home/zl/learn/go-mefs-v2/mefs-user\") error")
+	}
+}
 
-	start := time.Now()
-
-	read0(file)
-	t0 := time.Now()
-	fmt.Println("Cost time ", t0.Sub(start))
-
-	read1(file)
-	t1 := time.Now()
-	fmt.Println("Cost time ", t1.Sub(t0))
-
-	read2(file)
-	t2 := time.Now()
-	fmt.Println("Cost time ", t2.Sub(t1))
-
-	read3(file)
-	t3 := time.Now()
-	fmt.Println("Cost time ", t3.Sub(t2))
+func BenchmarkRead0(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Read0("/home/zl/learn/go-mefs-v2/mefs-user")
+	}
 }
