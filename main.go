@@ -16,13 +16,11 @@ import (
 	"time"
 
 	"os"
-	"strings"
 	"sync"
 
 	//pb "github.com/cheggaaa/pb"
 
 	"github.com/ethereum/go-ethereum/common"
-	peer "github.com/ipfs/go-ipfs/source/go-libp2p-peer"
 )
 
 type people struct {
@@ -503,69 +501,6 @@ func DisorderArrays(arrays [][]string) [][]string {
 // 	"40f87d13b8772bbbcdb4fedbc6e27d36", "284e66771c917fe86455495c60210307", "b87e38b9ff18e20ec234e42394a42a3b", "30664d01ffcb00540c3f02e870abf259", "9123231e636a4e5798df009fc1f9edba",
 // 	"1d20804f795d1e0f9619c6f380acff48"}
 
-func splitKidPid() {
-	IDLength := 30
-	metaValue := "8MKX58Ko5vBeJUkfgpkig53jZzwqoW8MGRZbvn8caS431icB2P1uT74B3EHh8MKEFiuo6pyUPwY6JX4UpGxNsHTPRn8MKFCw85uA7XoUtvAvgUt8XHCzST4e8MK5ewoUDg71TomfzKtKn36p6nB9ma8MHSTe6UWXsBYLgFKdEU3VnrnVPRUp/8MHRMZDG6X98SbTWPtLoNZUmArXPzY8MHuP2hhSwEkBmYDFpqbpWzETFQhhQ8MJSfW5oZrs1pyHkhTeFB3ZLUH47fk8MH2URvvhyzd5q9fMNZiB8jMbW4iDw8MJWXckRWs3yQpHVacxWAHAQjfQHue8MKYA1cVjtXt3Xs5d7jT9LZ8HG4e9Y8MGpV2fUoVBZmHVgbC6BffQA1WL3EW8MGiorvtvxGkT37xrJNnbNSnxwa23B8MGXyysTdfqL9q9Fpx9TuBAhSSh6Ed8MGQZ5phgtTgF6g78GBrk95fqmcpA58MGgwwPerdPg4Deb7NyS7iCETA7dFV"
-	splitedMeta := strings.Split(metaValue, "/")
-	if len(splitedMeta) != 2 {
-		return
-	}
-
-	kcount := 0
-	pcount := 0
-	var ks, ps []string
-	var has bool
-	keepers := splitedMeta[0]
-	for i := 0; i < len(keepers)/IDLength; i++ {
-		kid := keepers[i*IDLength : (i+1)*IDLength]
-		_, err := peer.IDB58Decode(kid)
-		if err != nil {
-			continue
-		}
-
-		has = false
-
-		for _, k := range ks {
-			if kid == k {
-				has = true
-				break
-			}
-		}
-
-		if !has {
-			ks = append(ks, kid)
-			kcount++
-		}
-	}
-
-	providers := splitedMeta[1]
-	for i := 0; i < len(providers)/IDLength; i++ {
-		kid := providers[i*IDLength : (i+1)*IDLength]
-		_, err := peer.IDB58Decode(kid)
-		if err != nil {
-			continue
-		}
-
-		has = false
-
-		for _, k := range ps {
-			if kid == k {
-				has = true
-				break
-			}
-		}
-
-		if !has {
-			ps = append(ps, kid)
-			pcount++
-		}
-	}
-	fmt.Println("ks:", kcount, " ps:", pcount)
-	fmt.Println(ks)
-	fmt.Println(ps)
-	return
-}
-
 // func test2() []people {
 // 	s := make([]people, 0)
 // 	for i := 0; i < 5; i++ {
@@ -611,16 +546,6 @@ func stShare(start, end int64) int {
 	return chalFrequency
 }
 
-func GetAddressFromID(id string) (address common.Address, err error) {
-	ID, err := peer.IDB58Decode(id)
-	if err != nil {
-		return common.Address([AddressLength]byte{}), err
-	}
-	addressByte := []byte(ID)[2:] //因为前两位表示multihash的hash type和hash length
-	address = bytesToAddress(addressByte)
-	return address, nil
-}
-
 func bytesToAddress(b []byte) common.Address {
 	var a common.Address
 	if len(b) > len(a) {
@@ -628,21 +553,6 @@ func bytesToAddress(b []byte) common.Address {
 	}
 	copy(a[AddressLength-len(b):], b)
 	return a
-}
-
-func GetIDFromAddress(address string) (id string, err error) {
-	addressByte, err := decodeHex(address)
-	if err != nil {
-		return "", err
-	}
-	//目前id用的是keccak_256哈希，所以hash type和hash length是[27 20],如果以后更改hash，此处需手动更改值
-	var a [22]byte
-	a[0] = 27
-	a[1] = 20
-	copy(a[2:], addressByte)
-	ID := peer.ID(string(a[:]))
-	id = peer.IDB58Encode(ID)
-	return id, nil
 }
 
 func decodeHex(hexStr string) (addressByte []byte, err error) {
